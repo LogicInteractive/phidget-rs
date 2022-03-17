@@ -1,0 +1,7 @@
+[package]
+name = "phidget-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+phidget22-sys = { git = "https://github.com/LogicInteractive/phidget22-sys" }
