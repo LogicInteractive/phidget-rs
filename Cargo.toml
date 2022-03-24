@@ -5,3 +5,6 @@ edition = "2021"
 
 [dependencies]
 phidget22-sys = { git = "https://github.com/LogicInteractive/phidget22-sys" }
+
+[dev-dependencies]
+ctrlc = { version = "3.0", features = ["termination"] }

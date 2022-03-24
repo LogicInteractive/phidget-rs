@@ -38,6 +38,7 @@ extern "C" fn phidget_rfid_on_tag_lost_handler(
 #[derive(Clone)]
 pub struct PhidgetRfid {
     pub handle: PhidgetRFIDHandle,
+    serial_number: Option<i32>,
     on_tag: Option<Rc<dyn Fn(String)>>,
     on_tag_lost: Option<Rc<dyn Fn(String)>>,
 }
@@ -47,6 +48,7 @@ impl Default for PhidgetRfid {
         let handle = std::ptr::null_mut::<_PhidgetRFID>();
         PhidgetRfid {
             handle,
+            serial_number: None,
             on_tag: None,
             on_tag_lost: None,
         }
@@ -55,6 +57,16 @@ impl Default for PhidgetRfid {
 
 #[allow(non_upper_case_globals)]
 impl PhidgetRfid {
+    pub fn new(serial_number: i32) -> Self {
+        let handle = std::ptr::null_mut::<_PhidgetRFID>();
+        PhidgetRfid {
+            handle,
+            serial_number: Some(serial_number),
+            on_tag: None,
+            on_tag_lost: None,
+        }
+    }
+
     pub fn on_tag(mut self, on_tag: impl Fn(String) + 'static) -> Self {
         self.on_tag = Some(Rc::new(on_tag));
         self
@@ -80,6 +92,10 @@ impl PhidgetRfid {
                         Some(phidget_rfid_on_tag_lost_handler),
                         phidget_rfid_raw,
                     );
+
+                    if let Some(serial_number) = self.serial_number {
+                        Phidget_setDeviceSerialNumber(self.handle as PhidgetHandle, serial_number);
+                    }
                     Phidget_openWaitForAttachment(self.handle as PhidgetHandle, 5000);
 
                     on_attach(&mut self);
