@@ -29,7 +29,7 @@ extern "C" fn phidget_rfid_on_tag_lost_handler(
     _protocol: PhidgetRFID_Protocol,
 ) {
     let tag = unsafe { CStr::from_ptr(tag).to_str().unwrap_or_default() };
-    let phidget_rfid = unsafe { Rc::from_raw(ctx as *mut Rc<PhidgetRfid>) };
+    let phidget_rfid = unsafe { &mut *(ctx as *mut PhidgetRfid) };
     if let Some(on_tag_lost) = &phidget_rfid.on_tag_lost {
         on_tag_lost(tag.to_string());
     }
